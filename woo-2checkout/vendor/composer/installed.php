@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'storepress/woo-2checkout',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'be918cf066aec0cb8d530068b20d3f1ec069e8a8',
+        'type' => 'wordpress-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => false,
+    ),
+    'versions' => array(
+        'automattic/jetpack-autoloader' => array(
+            'pretty_version' => 'v3.0.9',
+            'version' => '3.0.9.0',
+            'reference' => 'a571038214fc3e142e10f38d1bb97e470fa7b0ec',
+            'type' => 'composer-plugin',
+            'install_path' => __DIR__ . '/../automattic/jetpack-autoloader',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'storepress/admin-utils' => array(
+            'pretty_version' => '1.8.8',
+            'version' => '1.8.8.0',
+            'reference' => '69b5cb4b5a2b4625dbdb2a6bd3344c5e35fa5837',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../storepress/admin-utils',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'storepress/woo-2checkout' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'be918cf066aec0cb8d530068b20d3f1ec069e8a8',
+            'type' => 'wordpress-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);

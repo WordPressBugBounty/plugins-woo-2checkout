@@ -1,0 +1,21 @@
+== Payment Gateway - 2Checkout for WooCommerce ==
+
+= 3.0.3 - 2024-08-21 =
+
+* Add - WC 9.1+ compatibility.
+* Add - WP 6.6+ compatibility.
+
+= 3.0.2 - 2024-05-05 =
+
+* Add - WC 8.8+ compatibility.
+
+= 3.0.1 - 2024-04-17 =
+
+* Add - WC 8.7+ compatibility.
+
+= 3.0.0 - 2024-02-29 =
+
+* Add - Support WooCommerce High-performance order storage.
+* Add - Support WooCommerce Checkout Block.
+* Add - Support 2Checkout SHA2/SHA3 algorithm.
+* Add - WP 6.4+ and WC 8.6+ compatibility.
