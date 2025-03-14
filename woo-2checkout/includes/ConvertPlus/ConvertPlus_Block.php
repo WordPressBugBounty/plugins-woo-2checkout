@@ -6,6 +6,8 @@
  * @since      1.0.0
  */
 
+declare( strict_types=1 );
+
 namespace StorePress\TwoCheckoutPaymentGateway\ConvertPlus;
 
 defined( 'ABSPATH' ) || die( 'Keep Silent' );
@@ -29,22 +31,26 @@ class ConvertPlus_Block extends AbstractPaymentMethodType {
 	/**
 	 * Selected Gateway
 	 *
-	 * @var ConvertPlus_Gateway|ConvertPlus_Gateway_Pro Convert plus gateway class.
+	 * @var ConvertPlus_Gateway Convert plus gateway class.
 	 */
 	protected $gateway;
 
 	/**
 	 * Initializes the payment method type.
+	 *
+	 * @return void
 	 */
 	public function initialize() {
 		$option         = sprintf( 'woocommerce_%s_settings', $this->get_name() );
 		$this->settings = get_option( $option, array() );
-		$gateways       = WC()->payment_gateways->payment_gateways();
+		$gateways       = WC()->payment_gateways()->payment_gateways();
 		$this->gateway  = $gateways[ $this->get_name() ];
 	}
 
 	/**
 	 * Get gateway instance.
+	 *
+	 * @return ConvertPlus_Gateway
 	 */
 	public function get_gateway() {
 		return $this->gateway;
@@ -62,14 +68,13 @@ class ConvertPlus_Block extends AbstractPaymentMethodType {
 	/**
 	 * Returns an array of key=>value pairs of data made available to the payment methods script.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function get_payment_method_data(): array {
 		$checkout_style = sanitize_text_field( $this->get_setting( 'checkout_type', 'standard' ) );
 
 		return array(
 			'is_demo'           => wc_string_to_bool( $this->get_setting( 'demo', 'yes' ) ),
-			// 'icon_width'        => $this->get_setting( 'icon_width', '50' ),
 			'icon_uri'          => $this->get_gateway()->get_icon_url(),
 			'order_button_text' => $this->get_setting( 'order_button_text', esc_html__( 'Proceed to 2Checkout', 'woo-2checkout' ) ),
 			'title'             => $this->get_setting( 'title', esc_html__( '2Checkout', 'woo-2checkout' ) ),
@@ -92,9 +97,10 @@ class ConvertPlus_Block extends AbstractPaymentMethodType {
 	 * Returns an array of script handles to enqueue for this payment method in
 	 * the frontend context
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function get_payment_method_script_handles(): array {
+
 		$script_asset_path = woo_2checkout()->build_path() . '/convert-plus-block.asset.php';
 
 		$script_asset = file_exists( $script_asset_path ) ? require $script_asset_path : array(

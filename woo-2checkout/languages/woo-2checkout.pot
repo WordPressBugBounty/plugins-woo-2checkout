@@ -1,18 +1,17 @@
-# Copyright (C) 2024 Emran Ahmed
+# Copyright (C) 2025 Emran Ahmed
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Payment Gateway - 2Checkout for WooCommerce 3.0.3\n"
-"Report-Msgid-Bugs-To: https://getwooplugins.com/new-ticket/\n"
+"Project-Id-Version: WC Paddle by StorePress 3.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-2checkout\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-08-23T18:38:11+00:00\n"
+"POT-Creation-Date: 2025-03-14T19:08:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
-"language-team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Domain: woo-2checkout\n"
 
 #. Plugin Name of the plugin
@@ -40,253 +39,251 @@ msgstr ""
 msgid "https://getwooplugins.com/"
 msgstr ""
 
-#: includes/Common.php:206
-msgid "Unserializing instances of this class is forbidden."
-msgstr ""
-
-#: includes/ConvertPlus/ConvertPlus_Block.php:74
-#: includes/Payment_Gateway.php:102
-#: includes/Payment_Gateway.php:260
-#: build/convert-plus-block.js:1
+#: includes/ConvertPlus/ConvertPlus_Block.php:79
+#: includes/Payment_Gateway.php:103
+#: includes/Payment_Gateway.php:264
+#: build/convert-plus-block.js:1593
+#: src/convert-plus-block.js:22
+#: build/convert-plus-block.js:1457
 msgid "Proceed to 2Checkout"
 msgstr ""
 
-#: includes/ConvertPlus/ConvertPlus_Block.php:75
-#: includes/Payment_Gateway.php:100
-#: includes/Payment_Gateway.php:245
-#: build/convert-plus-block.js:1
+#: includes/ConvertPlus/ConvertPlus_Block.php:80
+#: includes/Payment_Gateway.php:101
+#: includes/Payment_Gateway.php:249
+#: build/convert-plus-block.js:1592
+#: src/convert-plus-block.js:21
+#: build/convert-plus-block.js:1456
 msgid "2Checkout"
 msgstr ""
 
-#: includes/ConvertPlus/ConvertPlus_Block.php:76
-#: includes/Payment_Gateway.php:101
-#: includes/Payment_Gateway.php:253
+#: includes/ConvertPlus/ConvertPlus_Block.php:81
+#: includes/Payment_Gateway.php:102
+#: includes/Payment_Gateway.php:257
 msgid "Pay via 2Checkout. Accept Credit Cards, PayPal and Debit Cards."
 msgstr ""
 
 #. translators: Shipping Method Name
-#: includes/ConvertPlus/ConvertPlus_Gateway.php:403
+#: includes/ConvertPlus/ConvertPlus_Gateway.php:412
 msgid "Shipping via %s"
 msgstr ""
 
-#: includes/ConvertPlus/ConvertPlus_Gateway.php:460
+#: includes/ConvertPlus/ConvertPlus_Gateway.php:470
 msgid "Failed to Generate 2Checkout ConvertPlus URL."
 msgstr ""
 
 #. translators: 1: Extended Plugin Name. 2: Extended Plugin Version. 3: Extended Plugin Compatible Version.
-#: includes/Extended_Plugin_Upgrade_Notice.php:68
+#: includes/Extended_Plugin_Upgrade_Notice.php:70
 msgid "You are using an incompatible version of <strong>%1$s - (%2$s)</strong>. Please upgrade to version <strong>%3$s</strong> or upper."
 msgstr ""
 
-#: includes/Payment_Gateway.php:90
+#: includes/Payment_Gateway.php:91
 msgid "2Checkout Payment Gateway"
 msgstr ""
 
-#: includes/Payment_Gateway.php:91
+#: includes/Payment_Gateway.php:92
 msgid "2Checkout accept mobile and online payments from customers worldwide."
 msgstr ""
 
 #. translators: Demo mode test payment. %s: Test payment card link.
-#: includes/Payment_Gateway.php:117
+#: includes/Payment_Gateway.php:118
 msgid "<strong>DEMO MODE ENABLED.</strong> Use a %s"
 msgstr ""
 
-#: includes/Payment_Gateway.php:235
+#: includes/Payment_Gateway.php:239
 msgid "Enable/Disable"
 msgstr ""
 
-#: includes/Payment_Gateway.php:237
+#: includes/Payment_Gateway.php:241
 msgid "Enable 2Checkout Payment Gateway"
 msgstr ""
 
-#: includes/Payment_Gateway.php:242
+#: includes/Payment_Gateway.php:246
 msgid "Title"
 msgstr ""
 
-#: includes/Payment_Gateway.php:244
+#: includes/Payment_Gateway.php:248
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: includes/Payment_Gateway.php:250
+#: includes/Payment_Gateway.php:254
 msgid "Description"
 msgstr ""
 
-#: includes/Payment_Gateway.php:252
+#: includes/Payment_Gateway.php:256
 msgid "This controls the description which the user sees during checkout."
 msgstr ""
 
-#: includes/Payment_Gateway.php:257
+#: includes/Payment_Gateway.php:261
 msgid "Order button text"
 msgstr ""
 
-#: includes/Payment_Gateway.php:259
+#: includes/Payment_Gateway.php:263
 msgid "Checkout order button text."
 msgstr ""
 
-#: includes/Payment_Gateway.php:265
+#: includes/Payment_Gateway.php:269
 msgid "Read How to Setup"
 msgstr ""
 
-#: includes/Payment_Gateway.php:271
+#: includes/Payment_Gateway.php:275
 msgid "Merchant Code"
 msgstr ""
 
 #. translators: Webhook URL
-#: includes/Payment_Gateway.php:275
+#: includes/Payment_Gateway.php:279
 msgid "Please enter 2Checkout <strong>Merchant Code</strong> from <a target=\"_blank\" href=\"%s\">Integrations > Webhooks &amp; API > API Section</a>."
 msgstr ""
 
-#: includes/Payment_Gateway.php:279
+#: includes/Payment_Gateway.php:283
 msgid "Secret Key"
 msgstr ""
 
 #. translators: Webhook URL
-#: includes/Payment_Gateway.php:281
+#: includes/Payment_Gateway.php:285
 msgid "Please enter 2Checkout <strong>Secret Key</strong> from <a target=\"_blank\" href=\"%s\">Integrations > Webhooks &amp; API > API Section</a>"
 msgstr ""
 
-#: includes/Payment_Gateway.php:287
+#: includes/Payment_Gateway.php:291
 msgid "Buy Link Secret Word"
 msgstr ""
 
 #. translators: Webhook URL
-#: includes/Payment_Gateway.php:289
+#: includes/Payment_Gateway.php:293
 msgid "Please enter 2Checkout <strong>Buy link secret word</strong> from <a target=\"_blank\" href=\"%s\">Integrations > Webhooks &amp; API > Secret word</a> section"
 msgstr ""
 
-#: includes/Payment_Gateway.php:295
+#: includes/Payment_Gateway.php:299
 msgid "Demo Mode"
 msgstr ""
 
-#: includes/Payment_Gateway.php:297
+#: includes/Payment_Gateway.php:301
 msgid "Enable Demo Mode"
 msgstr ""
 
-#: includes/Payment_Gateway.php:299
+#: includes/Payment_Gateway.php:303
 msgid "This mode allows you to test your setup to make sure everything works as expected without take real payment."
 msgstr ""
 
-#: includes/Payment_Gateway.php:303
+#: includes/Payment_Gateway.php:307
 msgid "Debug Log"
 msgstr ""
 
-#: includes/Payment_Gateway.php:305
+#: includes/Payment_Gateway.php:309
 msgid "Enable Logging"
 msgstr ""
 
 #. translators: WooCommerce Log URL
-#: includes/Payment_Gateway.php:307
+#: includes/Payment_Gateway.php:311
 msgid "Log 2Checkout events, <strong>DON'T ALWAYS ENABLE THIS.</strong> You can check this log in %s."
 msgstr ""
 
 #. translators: WooCommerce Log URL
-#: includes/Payment_Gateway.php:307
+#: includes/Payment_Gateway.php:311
 msgid "System Status &gt; Logs"
 msgstr ""
 
-#: includes/Payment_Gateway.php:311
+#: includes/Payment_Gateway.php:315
 msgid "Gateway Icon Style"
 msgstr ""
 
-#: includes/Payment_Gateway.php:314
+#: includes/Payment_Gateway.php:318
 msgid "Choose Gateway a Icon Style"
 msgstr ""
 
-#: includes/Payment_Gateway.php:316
+#: includes/Payment_Gateway.php:320
 msgid "Dark"
 msgstr ""
 
-#: includes/Payment_Gateway.php:317
+#: includes/Payment_Gateway.php:321
 msgid "Light"
 msgstr ""
 
-#: includes/Payment_Gateway.php:323
+#: includes/Payment_Gateway.php:327
 msgid "Gateway Icon Width"
 msgstr ""
 
-#: includes/Payment_Gateway.php:325
+#: includes/Payment_Gateway.php:329
 msgid "Gateway Icon Width in %. Limit: 1-100"
 msgstr ""
 
-#: includes/Payment_Gateway.php:336
-#: includes/Payment_Gateway.php:339
+#: includes/Payment_Gateway.php:340
+#: includes/Payment_Gateway.php:343
 msgid "Choose checkout type"
 msgstr ""
 
-#: includes/Payment_Gateway.php:341
+#: includes/Payment_Gateway.php:345
 msgid "Standard Checkout ( Process on 2Checkout Site )"
 msgstr ""
 
-#: includes/Payment_Gateway.php:342
+#: includes/Payment_Gateway.php:346
 msgid "Popup After Checkout - Inline Checkout - PRO FEATURE"
 msgstr ""
 
-#: includes/Payment_Gateway.php:343
+#: includes/Payment_Gateway.php:347
 msgid "Popup During Checkout - Inline Checkout - PRO FEATURE"
 msgstr ""
 
-#: includes/Payment_Gateway.php:344
+#: includes/Payment_Gateway.php:348
 msgid "On Page Credit Card Only - PRO FEATURE"
 msgstr ""
 
 #. translators: %s: WebHook link.
-#: includes/Payment_Gateway.php:421
+#: includes/Payment_Gateway.php:419
 msgid "<strong>Webhook endpoint: </strong> <code style=\"background-color:#ddd;\">%s</code> to your <a href=\"https://secure.2checkout.com/cpanel/ipn_settings.php\" target=\"_blank\">2Checkout IPN settings</a>"
 msgstr ""
 
-#: includes/Payment_Gateway.php:746
+#: includes/Payment_Gateway.php:739
 msgid "Item"
 msgstr ""
 
-#: includes/Payment_Gateway.php:778
+#: includes/Payment_Gateway.php:771
 msgid "Payment Gateway - 2Checkout for WooCommerce disabled"
 msgstr ""
 
-#: includes/Payment_Gateway.php:778
+#: includes/Payment_Gateway.php:771
 msgid "You must fill the \"Merchant Code\" and the \"Secret Key\" and \"Buy Link Secret Word\" fields."
 msgstr ""
 
-#: includes/Payment_Gateway.php:787
+#: includes/Payment_Gateway.php:780
 msgid "Billing Currency not supported. Payment Gateway - 2Checkout for WooCommerce disabled"
 msgstr ""
 
-#: includes/Payment_Gateway.php:787
+#: includes/Payment_Gateway.php:780
 msgid "2Checkout does not support your store currency."
 msgstr ""
 
-#: includes/Payment_Gateway.php:812
+#: includes/Payment_Gateway.php:805
 msgid "Should override on child class."
 msgstr ""
 
-#: includes/Plugin.php:181
+#: includes/Plugin.php:207
 msgid "Payment Gateway - 2Checkout for WooCommerce - Pro "
 msgstr ""
 
 #. translators: %s: Pro version link.
-#: includes/Plugin.php:185
+#: includes/Plugin.php:211
 msgid "Upgrade to %s to get WooCommerce Subscriptions payments, issue refunds from wp admin, inline popup checkout and more."
 msgstr ""
 
-#: includes/Plugin.php:484
+#: includes/Plugin.php:451
 msgid "Settings"
 msgstr ""
 
-#: woo-2checkout.php:82
-msgid "WooCommerce"
-msgstr ""
-
-#: woo-2checkout.php:94
-msgid "<strong>Payment Gateway - 2Checkout for WooCommerce</strong> is an add-on of "
-msgstr ""
-
-#: build/convert-plus-block.js:1
+#: build/convert-plus-block.js:1621
+#: src/convert-plus-block.js:57
+#: build/convert-plus-block.js:1492
 msgid "DEMO MODE ENABLED."
 msgstr ""
 
-#: build/convert-plus-block.js:1
+#: build/convert-plus-block.js:1622
+#: src/convert-plus-block.js:59
+#: build/convert-plus-block.js:1494
 msgid "Use a"
 msgstr ""
 
-#: build/convert-plus-block.js:1
+#: build/convert-plus-block.js:1626
+#: src/convert-plus-block.js:66
+#: build/convert-plus-block.js:1501
 msgid "test payment cards"
 msgstr ""

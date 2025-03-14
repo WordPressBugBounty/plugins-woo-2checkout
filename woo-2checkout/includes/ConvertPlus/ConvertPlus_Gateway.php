@@ -6,12 +6,16 @@
  * @since      1.0.0
  */
 
+declare( strict_types=1 );
+
 namespace StorePress\TwoCheckoutPaymentGateway\ConvertPlus;
 
 defined( 'ABSPATH' ) || die( 'Keep Silent' );
 
+use StorePress\TwoCheckoutPaymentGateway\Common;
 use StorePress\TwoCheckoutPaymentGateway\Payment_Gateway;
 use WC_Order;
+use WC_Order_Item_Product;
 
 /**
  * StorePress 2Checkout ConvertPlusGateway class.
@@ -19,9 +23,10 @@ use WC_Order;
  * Extended by individual payment gateway style to handle payments.
  *
  * @class       ConvertPlus_Gateway
- * @extends     Payment_Gateway
  */
 class ConvertPlus_Gateway extends Payment_Gateway {
+
+	use Common;
 
 	/**
 	 * Process after gateway redirect.
@@ -30,14 +35,14 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	 */
 	public function process_gateway_redirect() {
 
-		$data = stripslashes_deep( $_GET ); // phpcs:ignore.
+		$data = stripslashes_deep( $this->http_get_var() );
 
 		do_action( 'woo_2checkout_process_gateway_redirect', $data, $this );
 
 		status_header( 200 );
 		nocache_headers();
 
-		$this->log( "Gateway Redirect Response \n" . print_r( $data, true ) ); // phpcs:ignore.
+		$this->log( 'Gateway Redirect Response:', $data );
 
 		if ( empty( $data['order-ext-ref'] ) ) {
 			wp_die( '2Checkout Gateway Return no "order-ext-ref"', '2Checkout Response', array( 'response' => 500 ) );
@@ -53,11 +58,13 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 				wp_die( sprintf( 'Order# %d is not available.', absint( $order_id ) ), '2Checkout Request', array( 'response' => 500 ) );
 			}
 
-			$this->log( "Gateway Return Signature: \n" . print_r( // phpcs:ignore.
-					array(
-						'wc generated' => $this->get_api()->generate_return_signature( $data, $this->buy_link_secret_word ),
-						'2co returned' => $data['signature'],
-					), true ) );
+			$this->log(
+				'Gateway Return Signature',
+				array(
+					'wc generated' => $this->get_api()->generate_return_signature( $data, $this->buy_link_secret_word ),
+					'2co returned' => $data['signature'],
+				)
+			);
 
 			if ( ! $this->get_api()->is_valid_return_signature( $data, $this->buy_link_secret_word ) ) {
 				$order->update_status( 'failed', 'Order failed due to 2checkout signature mismatch.' );
@@ -87,12 +94,12 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	 */
 	public function process_gateway_ipn_response() {
 
-		if ( ! $_POST ) { // phpcs:ignore
+		if ( ! $this->http_post_var() ) {
 			return;
 		}
 
 		// Don't alter any value otherwise 2checkout hash won't be matched.
-		$data = stripslashes_deep( $_POST ); // phpcs:ignore
+		$data = stripslashes_deep( $this->http_post_var() );
 
 		do_action( 'woo_2checkout_gateway_process_ipn_response', $data, $this );
 
@@ -103,9 +110,8 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 		$base_string_for_hash = $this->get_api()->generate_base_string_for_hash( $data );
 		$ipn_receipt          = $this->get_api()->ipn_receipt_response( $data );
 
-		// $this->log( "IPN Base String For Hash: \n" . print_r( $base_string_for_hash, true ) ); // phpcs:ignore
-		$this->log( "IPN Response: \n" . print_r( $data, true ), 'info' ); // phpcs:ignore
-		$this->log( "IPN receipt_response: \n" . print_r( $ipn_receipt, true ), 'info' ); // phpcs:ignore
+		$this->log( 'IPN Response:', $data );
+		$this->log( 'IPN receipt_response:', array( 'ipn_receipt' => $ipn_receipt ) );
 
 		if ( $ipn_receipt ) {
 
@@ -116,7 +122,7 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 			if ( ! $order ) {
 				echo wp_kses( $ipn_receipt, $this->get_api()->kses_receipt_response_allowed_html() );
 				do_action( 'woo_2checkout_gateway_process_ipn_response_invalid_order', $data, $this );
-				$this->log( sprintf( 'Order# %d is not available.', $order_id ), 'error' );
+				$this->log( sprintf( 'Order# %d is not available.', $order_id ) );
 				exit();
 			}
 
@@ -170,14 +176,14 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 						break;
 
 					default:
-						$this->log( sprintf( "IPN Response: ORDERSTATUS = %s \n", $data['ORDERSTATUS'] ) . print_r( $data, true ), 'info' ); // phpcs:ignore
+						$this->log( sprintf( "IPN Response: ORDERSTATUS = %s \n", $data['ORDERSTATUS'] ), $data );
 						break;
 				}
 			}
 
 			echo wp_kses( $ipn_receipt, $this->get_api()->kses_receipt_response_allowed_html() );
 		} else {
-			$this->log( 'No IPN Receipt Response Code Generated.', 'error' );
+			$this->log( 'No IPN Receipt Response Code Generated.' );
 			echo 'No IPN Receipt Generated.';
 		}
 		exit();
@@ -188,10 +194,10 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	 *
 	 * @param WC_Order $order Order.
 	 *
-	 * @return mixed|null
+	 * @return string
 	 */
-	public function get_checkout_order_received_url( WC_Order $order ) {
-		$order_received_url = wc_get_endpoint_url( 'downloads', $order->get_id(), wc_get_page_permalink( 'my-account' ) );
+	public function get_checkout_order_received_url( WC_Order $order ): string {
+		$order_received_url = wc_get_endpoint_url( 'downloads', (string) $order->get_id(), wc_get_page_permalink( 'my-account' ) );
 
 		if ( 'yes' === get_option( 'woocommerce_force_ssl_checkout' ) || is_ssl() ) {
 			$order_received_url = str_replace( 'http:', 'https:', $order_received_url );
@@ -205,7 +211,7 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	/**
 	 * Get Generated ConvertPlus URL.
 	 *
-	 * @param array $parameters url params.
+	 * @param array<string, mixed> $parameters url params.
 	 *
 	 * @return string
 	 */
@@ -218,11 +224,13 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	 *
 	 * @param WC_Order $order Order.
 	 *
-	 * @return mixed|null
+	 * @return array<string, mixed>
 	 */
-	public function payment_args( WC_Order $order ) {
+	public function payment_args( WC_Order $order ): array {
 
-		$ship_to_different_address = ! empty( $_POST['ship_to_different_address'] ) && ! wc_ship_to_billing_address_only(); // phpcs:ignore.
+		$is_ship_to_different_address = wc_string_to_bool( $this->http_post_var( 'ship_to_different_address', false ) );
+
+		$ship_to_different_address = $is_ship_to_different_address && ! wc_ship_to_billing_address_only();
 
 		$args = array();
 
@@ -258,8 +266,8 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 		}
 
 		if ( $order->has_billing_address() ) {
-			$args['address']  = esc_html( $order->get_billing_address_1() );
-			if( $order->get_billing_address_2() ){
+			$args['address'] = esc_html( $order->get_billing_address_1() );
+			if ( $order->get_billing_address_2() ) {
 				$args['address2'] = esc_html( $order->get_billing_address_2() );
 			}
 		}
@@ -341,9 +349,9 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 		if ( count( $order->get_items() ) > 0 ) {
 			foreach ( $order->get_items() as $item ) {
 
-				// $item = new WC_Order_Item_Product(); // WC_Order_Item
-
-				$product = $item->get_product();
+				$item_id    = $item->get_id();
+				$order_item = new WC_Order_Item_Product( $item_id );
+				$product    = $order_item->get_product();
 
 				if ( ! $product ) {
 					continue;
@@ -351,7 +359,7 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 
 				$product_info['prod'][]  = $this->format_item_name( $item->get_name() );
 				$product_info['price'][] = $this->format_item_price( $order->get_item_total( $item ) );
-				$product_info['qty'][]   = $item->get_quantity(); // get_item_total
+				$product_info['qty'][]   = $item->get_quantity();
 
 				if ( $product->is_downloadable() || $product->is_virtual() ) {
 					$product_info['type'][] = 'digital';
@@ -387,7 +395,8 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 		if ( 0 < count( $order->get_fees() ) ) {
 			foreach ( $order->get_fees() as $item ) {
 
-				// new WC_Order_Item_Fee()
+				// Item will be "new WC_Order_Item_Fee()".
+
 				$product_info['type'][]         = 'tax';
 				$product_info['prod'][]         = $this->format_item_name( $item->get_name() );
 				$product_info['price'][]        = $this->format_item_price( $item->get_total() );
@@ -435,22 +444,23 @@ class ConvertPlus_Gateway extends Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function process_payment( $order_id ): array {
 
 		$order      = wc_get_order( $order_id );
 		$parameters = $this->payment_args( $order );
 
-		ksort( $parameters);
+		ksort( $parameters );
 
-		$this->log( "PAYMENT ARGS:\n" . print_r( $parameters, true ) ); // phpcs:ignore.
+		$this->log( 'PAYMENT ARGS:', $parameters );
 
 		$payment_url = $this->get_payment_url( $parameters );
 
-		$this->log( "PAYMENT LINK:\n" . $payment_url ); // phpcs:ignore.
+		$this->log( 'Generated PAYMENT LINK:', array( 'payment_link' => $payment_url ) );
 
 		if ( ! empty( $payment_url ) ) {
+
 			return array(
 				'result'   => 'success',
 				'redirect' => $payment_url,

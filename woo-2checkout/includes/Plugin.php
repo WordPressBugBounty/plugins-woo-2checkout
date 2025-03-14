@@ -6,6 +6,8 @@
  * @since      1.0.0
  */
 
+declare( strict_types=1 );
+
 namespace StorePress\TwoCheckoutPaymentGateway;
 
 defined( 'ABSPATH' ) || die( 'Keep Silent' );
@@ -46,18 +48,27 @@ class Plugin {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
+
 		try {
 			$this->includes();
 			$this->hooks();
 			$this->init();
 		} catch ( Exception $e ) {
-			$this->trigger_error( __METHOD__, $e->getMessage() );
+
+			$message = sprintf( '<strong>%s:</strong> %s', $this->name(), $e->getMessage() );
+			add_action(
+				'admin_notices',
+				function () use ( $message ) {
+					printf( '<div class="notice notice-error"><p>%s</p></div>', wp_kses_data( $message ) );
+				},
+				50
+			);
 		}
 
 		/**
 		 * Action to signal that Plugin has finished loading.
 		 *
-		 * @param Plugin $this Plugin Object.
+		 * @param Plugin $instance Plugin Object.
 		 *
 		 * @since 1.0.0
 		 */
@@ -75,13 +86,23 @@ class Plugin {
 	}
 
 	/**
+	 * Plugin Absolute File for PRO Plugin.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	public function get_pro_plugin_file(): string {
+		return woo_2checkout_pro_plugin_file();
+	}
+
+	/**
 	 * Get Compatible Extended Plugin Version.
 	 *
 	 * @return string
 	 * @since 1.0.0
 	 */
 	public function get_compatible_extended_version(): string {
-		return constant( 'STOREPRESS_TWO_CHECKOUT_COMPATIBLE_EXTENDED_VERSION' );
+		return woo_2checkout_compatible_pro_version();
 	}
 
 	/**
@@ -100,27 +121,27 @@ class Plugin {
 		return esc_attr( $versions[0] );
 	}
 
-
 	/**
-	 * Set constant if not defined and prevent reassign
+	 * Get Plugin Name.
 	 *
-	 * @param string $name  Constant name.
-	 * @param mixed  $value Constant value.
-	 *
-	 * @return void.
+	 * @return string
 	 * @since 1.0.0
 	 */
-	public function define( string $name, $value ) {
-		if ( ! defined( $name ) ) {
-			// phpcs:ignore
-			define( $name, $value );
+	public function name(): string {
+		static $names;
+
+		if ( is_null( $names ) ) {
+			$names = get_file_data( $this->get_plugin_file(), array( 'Plugin Name' ) );
 		}
+
+		return esc_attr( $names[0] );
 	}
 
 	/**
 	 * Includes.
 	 *
 	 * @throws Exception When class files loading fails.
+	 * @return void
 	 * @since 1.0.0
 	 */
 	public function includes() {
@@ -131,13 +152,14 @@ class Plugin {
 			return;
 		}
 
-		throw new Exception( '"vendor/autoload_packages.php" file missing. Please run `composer install`' );
+		throw new Exception( '<em>vendor/autoload_packages.php</em> file missing. Please run <code>composer install</code>' );
 	}
 
 	/**
 	 * Initialize Classes.
 	 *
 	 * @since 1.0.0
+	 * @return void
 	 */
 	public function init() {
 		Extended_Plugin_Upgrade_Notice::instance();
@@ -152,7 +174,8 @@ class Plugin {
 	 */
 	public function hooks() {
 		// Register with hook.
-		add_action( 'init', array( $this, 'language' ), 1 );
+
+		add_action( 'init', array( $this, 'load_translations' ) );
 
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateways' ) );
 
@@ -162,13 +185,16 @@ class Plugin {
 
 		add_filter( 'plugin_action_links_' . $this->plugin_basename(), array( $this, 'plugin_action_links' ) );
 
-		add_filter(
-			'woocommerce_no_available_payment_methods_message',
-			array(
-				$this,
-				'available_payment_methods_message',
-			)
-		);
+		add_filter( 'woocommerce_no_available_payment_methods_message', array( $this, 'available_payment_methods_message' ) );
+	}
+
+	/**
+	 * Load Plugin Translation Files.
+	 *
+	 * @return void
+	 */
+	public function load_translations() {
+		load_plugin_textdomain( 'woo-2checkout', false, $this->plugin_dirname() . '/languages' );
 	}
 
 	/**
@@ -185,16 +211,6 @@ class Plugin {
 			esc_html__( 'Upgrade to %s to get WooCommerce Subscriptions payments, issue refunds from wp admin, inline popup checkout and more.', 'woo-2checkout' ),
 			$pro_link
 		) . '</strong>';
-	}
-
-	/**
-	 * Language
-	 *
-	 * @return void
-	 * @since 1.0.0
-	 */
-	public function language() {
-		load_plugin_textdomain( 'woo-2checkout', false, $this->plugin_path() . '/languages' );
 	}
 
 	/**
@@ -340,55 +356,6 @@ class Plugin {
 	}
 
 	/**
-	 * Generates a user-level error/warning/notice/deprecation message.
-	 *
-	 * Generates the message when `WP_DEBUG` is true.
-	 *
-	 * @param string $function_name The function that triggered the error.
-	 * @param string $message       The message explaining the error.
-	 *                              The message can contain allowed HTML 'a' (with href), 'code',
-	 *                              'br', 'em', and 'strong' tags and http or https protocols.
-	 *                              If it contains other HTML tags or protocols, the message should be escaped
-	 *                              before passing to this function to avoid being stripped {@see wp_kses()}.
-	 *
-	 * @since 1.0.0
-	 */
-	public function trigger_error( string $function_name, string $message ) {
-
-		// Bail out if WP_DEBUG is not turned on.
-		if ( ! WP_DEBUG ) {
-			return;
-		}
-
-		if ( function_exists( 'wp_trigger_error' ) ) {
-			wp_trigger_error( $function_name, $message );
-		} else {
-
-			if ( ! empty( $function_name ) ) {
-				$message = sprintf( '%s(): %s', $function_name, $message );
-			}
-
-			$message = wp_kses(
-				$message,
-				array(
-					'a' => array( 'href' ),
-					'br',
-					'code',
-					'em',
-					'strong',
-				),
-				array( 'http', 'https' )
-			);
-
-			// phpcs:ignore
-			trigger_error( $message );
-		}
-	}
-
-	// Add Features...
-	// Happy Coding.
-
-	/**
 	 * Get payment gateway class name by checkout type.
 	 *
 	 * @return string Gateway Class Name.
@@ -410,9 +377,9 @@ class Plugin {
 	/**
 	 * Add gateway class name.
 	 *
-	 * @param array $methods gateway names.
+	 * @param string[] $methods gateway names.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function add_gateways( array $methods ): array {
 		$methods[] = $this->get_gateway_class_by_style();
@@ -464,9 +431,9 @@ class Plugin {
 	/**
 	 * Add new action link.
 	 *
-	 * @param array $links available action links.
+	 * @param array<string, string> $links available action links.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function plugin_action_links( array $links ): array {
 
@@ -486,6 +453,7 @@ class Plugin {
 		return array_merge( $links, $new_links );
 	}
 
+
 	/**
 	 * Get Gateway class instance.
 	 *
@@ -493,13 +461,15 @@ class Plugin {
 	 */
 	public function get_gateway(): Payment_Gateway {
 		$gateway_id       = 'woo-2checkout';
-		$payment_gateways = WC()->payment_gateways->payment_gateways();
+		$payment_gateways = WC()->payment_gateways()->payment_gateways();
 
 		return $payment_gateways[ $gateway_id ];
 	}
 
 	/**
 	 * Loads the dependency injection container.
+	 *
+	 * @return void
 	 */
 	public function register_dependencies() {
 
@@ -517,7 +487,7 @@ class Plugin {
 	/**
 	 * Loads the dependency injection container.
 	 *
-	 * @return Container;
+	 * @return Container
 	 */
 	public function container(): Container {
 		return Package::container();

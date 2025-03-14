@@ -5,6 +5,8 @@
  * @package     \StorePress\TwoCheckoutPaymentGateway
  */
 
+declare( strict_types=1 );
+
 namespace StorePress\TwoCheckoutPaymentGateway;
 
 defined( 'ABSPATH' ) || die( 'Keep Silent' );
@@ -19,7 +21,6 @@ use WC_Order;
  * Extended by individual payment gateway style to handle payments.
  *
  * @class       Payment_Gateway
- * @extends     WC_Payment_Gateway
  */
 class Payment_Gateway extends WC_Payment_Gateway {
 
@@ -135,6 +136,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	 */
 	public function hook() {
 
+		// @phpstan-ignore-next-line
 		add_action(
 			'woocommerce_update_options_payment_gateways_woo-2checkout',
 			array(
@@ -210,7 +212,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		// Override Icon.
 		$icon_url = $this->get_icon_url();
 
-		return sprintf( '<img class="woo-2checkout-gateway-pay-image" alt="%s" src="%s" style="width: %d%%" />', esc_attr( $this->order_button_text ), esc_url( $icon_url ), absint( $this->icon_width ) );
+		return sprintf( '<img class="woo-2checkout-gateway-pay-image" alt="%s" src="%s" style="width: %d%%" />', esc_attr( $this->order_button_text ), esc_url( $icon_url ), absint( $this->icon_width ) ); // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
 	}
 
 	/**
@@ -226,6 +228,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	 * Initialise settings form fields.
 	 *
 	 * Add an array of fields to be displayed on the gateway's settings screen.
+	 *
+	 * @return void
 	 */
 	public function init_form_fields() {
 
@@ -353,8 +357,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	/**
 	 * Generate Select HTML.
 	 *
-	 * @param string $key  Field key.
-	 * @param array  $data Field data.
+	 * @param string               $key  Field key.
+	 * @param array<string, mixed> $data Field data.
 	 *
 	 * @return string
 	 */
@@ -380,29 +384,23 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		?>
 		<tr>
 			<th scope="row" class="titledesc">
-				<label
-					for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?><?php echo $this->get_tooltip_html( $data ); // phpcs:ignore ?></label>
+				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?><?php echo $this->get_tooltip_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</th>
 			<td class="forminp">
 				<fieldset>
-					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span>
-					</legend>
+					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
 					<select class="select <?php echo esc_attr( $data['class'] ); ?>"
 							name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>"
-							style="<?php echo esc_attr( $data['css'] ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore ?>>
+							style="<?php echo esc_attr( $data['css'] ); ?>" <?php echo $this->get_custom_attribute_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 						<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
 							<option
-								<?php
-								disabled( $data['disabled'], true );
-								?>
+								<?php disabled( $data['disabled'] ); ?>
 								value="<?php echo esc_attr( $option_key ); ?>"
-								<?php
-								selected( (string) $option_key, esc_attr( $value ) );
-								?>
+								<?php selected( (string) $option_key, esc_attr( $value ) ); ?>
 							><?php echo esc_html( $option_value ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<?php echo $this->get_description_html( $data ); // phpcs:ignore ?>
+					<?php echo $this->get_description_html( $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</fieldset>
 			</td>
 		</tr>
@@ -639,26 +637,21 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 	/** Log
 	 *
-	 * @param string $message log message.
-	 * @param string $level   log label.
-	 *                        'emergency': System is unusable.
-	 *                        'alert': Action must be taken immediately.
-	 *                        'critical': Critical conditions.
-	 *                        'error': Error conditions.
-	 *                        'warning': Warning conditions.
-	 *                        'notice': Normal but significant condition.
-	 *                        'info': Informational messages.
-	 *                        'debug': Debug-level messages.
+	 * @param string                   $title   log title.
+	 * @param array<string|int, mixed> $message log message.
+	 *
+	 * @return void
 	 */
-	public function log( string $message, string $level = 'info' ) {
-
+	public function log( string $title, array $message = array() ) {
 		if ( ! $this->debug ) {
 			return;
 		}
 
-		$context = array( 'source' => $this->get_id() );
+		$context = array(
+			'source' => $this->get_id(),
+		);
 
-		$this->log->log( $level, $message, $context );
+		wc_get_logger()->info( $title, array_merge( $message, $context ) );
 	}
 
 	/**
@@ -769,7 +762,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$merchant_code        = sprintf( 'woocommerce_%s_merchant_code', $this->get_id() );
 		$secret_key           = sprintf( 'woocommerce_%s_secret_key', $this->get_id() );
 		$buy_link_secret_word = sprintf( 'woocommerce_%s_buy_link_secret_word', $this->get_id() );
-		$data                 = stripslashes_deep( $_POST ); // phpcs:ignore
+		$data                 = stripslashes_deep( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( ! empty( $data[ $merchant_code ] ) && ! empty( $data[ $secret_key ] ) && ! empty( $data[ $buy_link_secret_word ] ) ) {
 			return;
@@ -827,8 +820,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function process_gateway_ins_response() {
-		$data = stripslashes_deep( $_POST ); // phpcs:ignore
-		$this->log( "INS Response: \n" . print_r( $data, true ), 'info' ); // phpcs:ignore
+		$data = stripslashes_deep( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$this->log( 'INS Response:', $data );
 		do_action( 'woo_2checkout_gateway_process_ins_response', $data, $this );
 	}
 

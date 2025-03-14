@@ -6,6 +6,8 @@
  * @since      1.0.0
  */
 
+declare( strict_types=1 );
+
 namespace StorePress\TwoCheckoutPaymentGateway;
 
 defined( 'ABSPATH' ) || die( 'Keep Silent' );
@@ -37,7 +39,7 @@ class Extended_Plugin_Upgrade_Notice extends Upgrade_Notice {
 	 * @return string
 	 */
 	public function plugin_file(): string {
-		return 'woo-2checkout-pro/woo-2checkout-pro.php';
+		return woo_2checkout()->get_pro_plugin_file();
 	}
 
 	/**
@@ -55,7 +57,7 @@ class Extended_Plugin_Upgrade_Notice extends Upgrade_Notice {
 	 * @return bool
 	 */
 	public function deactivate_incompatible(): bool {
-		return false;
+		return true;
 	}
 
 	/**

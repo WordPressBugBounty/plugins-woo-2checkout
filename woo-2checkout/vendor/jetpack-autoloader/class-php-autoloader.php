@@ -5,7 +5,7 @@
  * @package automattic/jetpack-autoloader
  */
 
-namespace Automattic\Jetpack\Autoloader\jpfbd493a17f366db9959bbabb6910870d\al3_0_9;
+namespace Automattic\Jetpack\Autoloader\jp5791497c48068042a99c211c9c489769\al5_0_3;
 
  // phpcs:ignore
 
@@ -85,6 +85,18 @@ class PHP_Autoloader {
 		$file = $jetpack_autoloader_loader->find_class_file( $class_name );
 		if ( ! isset( $file ) ) {
 			return false;
+		}
+
+		// A common source of strange and confusing problems is when a vendor
+		// file is autoloaded before all plugins have had a chance to register
+		// with the autoloader. Detect that, if a development constant is set.
+		if ( defined( 'JETPACK_AUTOLOAD_DEBUG_EARLY_LOADS' ) && JETPACK_AUTOLOAD_DEBUG_EARLY_LOADS &&
+			( strpos( $file, '/vendor/' ) !== false || strpos( $file, '/jetpack_vendor/' ) !== false ) &&
+			is_callable( 'did_action' ) && ! did_action( 'plugins_loaded' )
+		) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_wp_debug_backtrace_summary -- This is a debug log message.
+			$msg = "Jetpack Autoloader: Autoloading `$class_name` before the plugins_loaded hook may cause strange and confusing problems. " . wp_debug_backtrace_summary( '', 1 );
+			wp_trigger_error( '', $msg );
 		}
 
 		require $file;
